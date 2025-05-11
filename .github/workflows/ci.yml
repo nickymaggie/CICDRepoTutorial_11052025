@@ -25,6 +25,20 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
+      - name: Install SonarCloud Scanner
+        uses: sonarsource/sonarcloud-github-action@v2
+        with:
+          organization: your-sonarcloud-organization
+          token: ${{ secrets.SONAR_TOKEN }}
+
+      - name: Build and Analyze Code
+        run: |
+          dotnet build
+          dotnet sonarscanner begin /k:"your_project_key" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
+          dotnet build
+          dotnet sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
+
+
       - name: Build Docker Image
         run: |
           docker build -t myapp:latest .

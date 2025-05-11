@@ -10,8 +10,8 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
-
+    name: Build and analyze
+    runs-on: windows-latest
     steps:
       - name: Checkout Code
         uses: actions/checkout@v2

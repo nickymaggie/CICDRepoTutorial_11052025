@@ -33,7 +33,7 @@ jobs:
       - name: Install SonarCloud Scanner
         uses: sonarsource/sonarcloud-github-action@v2
         with:
-          organization: nickymaggie
+          organization: "nickymaggie"
           token: ${{ secrets.SONAR_TOKEN }}
 
       - name: Build and Analyze Code

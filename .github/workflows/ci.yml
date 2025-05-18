@@ -1,30 +1,23 @@
-name: Build and Deploy Docker Image
-
+name: SonarQube
 on:
   push:
     branches:
       - main
   pull_request:
-    branches:
-      - main
-
+    types: [opened, synchronize, reopened]
 jobs:
   build:
-    runs-on: ubuntu-latest
-
+    name: Build and analyze
+    runs-on: windows-latest
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v2
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
-
-      - name: Log in to DockerHub
-        uses: docker/login-action@v2
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
         with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
-
+          java-version: 17
+          distribution: 'zulu' # Alternative distribution options are available.
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
       - name: Cache SonarQube Cloud packages
         uses: actions/cache@v4
         with:
@@ -41,7 +34,6 @@ jobs:
       - name: Install SonarQube Cloud scanner
         if: steps.cache-sonar-scanner.outputs.cache-hit != 'true'
         shell: powershell
-      - name: Build and Analyze Code
         run: |
           New-Item -Path .\.sonar\scanner -ItemType Directory
           dotnet tool update dotnet-sonarscanner --tool-path .\.sonar\scanner
@@ -54,6 +46,15 @@ jobs:
           dotnet build
           .\.sonar\scanner\dotnet-sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
 
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Log in to DockerHub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+          
       - name: Build Docker Image
         run: |
           docker build -t myapp:latest .
@@ -62,4 +63,3 @@ jobs:
         run: |
           docker tag myapp:latest ${{ secrets.DOCKER_USERNAME }}/myapp:latest
           docker push ${{ secrets.DOCKER_USERNAME }}/myapp:latest
-

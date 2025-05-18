@@ -1,7 +1,7 @@
 #!/bin/bash
 
 APP_NAME="CICDRepoTutorial_11052025"
-IMAGE_NAME="yourdockerhubusername/mydotnetapp:latest"
+IMAGE_NAME="nickymaggie2017/CICDRepoTutorial_11052025:latest"
 
 echo "Pulling latest image..."
 docker pull $IMAGE_NAME

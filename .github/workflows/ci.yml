@@ -46,10 +46,10 @@ jobs:
           dotnet build
           .\.sonar\scanner\dotnet-sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
       - name: Build Docker Image
-        run: docker build -t cicdrepotutorial-11052025 .
+        run: docker build -t CICDRepoTutorial_11052025 .
 
       - name: Save Docker image as tar
-        run: docker save cicdrepotutorial-11052025 -o cicdrepotutorial-11052025.tar
+        run: docker save CICDRepoTutorial_11052025 -o cicdrepotutorial-11052025.tar
   
       - name: Copy Docker image to VPS
         uses: appleboy/scp-action@v0.1.7

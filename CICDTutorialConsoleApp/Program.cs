@@ -2,5 +2,6 @@
 Console.WriteLine("Hello, World!");
 Console.WriteLine("Add Docker");
 Console.WriteLine("Run Sonar Cloud");
-Console.WriteLine("Build and do Deploy");
+Console.WriteLine("Show Results Sonar Cloud");
+//Console.WriteLine("Build and do Deploy");
 Console.WriteLine("Ready123");

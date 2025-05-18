@@ -45,3 +45,29 @@ jobs:
           .\.sonar\scanner\dotnet-sonarscanner begin /k:"nickymaggie_CICDRepoTutorial_11052025" /o:"nickymaggie" /d:sonar.token="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io"
           dotnet build
           .\.sonar\scanner\dotnet-sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
+      - name: Build Docker Image
+        run: docker build -t CICDRepoTutorial_11052025 .
+
+      - name: Save Docker image as tar
+        run: docker save CICDRepoTutorial_11052025 -o CICDRepoTutorial_11052025.tar
+  
+      - name: Copy Docker image to VPS
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          password: ${{ secrets.VPS_PASSWORD }}
+          source: "CICDRepoTutorial_11052025.tar"
+          target: "/root"
+  
+      - name: SSH into VPS and deploy Docker container
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          password: ${{ secrets.VPS_PASSWORD }}
+          script: |
+            docker load -i /root/CICDRepoTutorial_11052025.tar
+            docker stop CICDRepoTutorial_11052025 || true
+            docker rm CICDRepoTutorial_11052025 || true
+            docker run -d --name CICDRepoTutorial_11052025 CICDRepoTutorial_11052025
